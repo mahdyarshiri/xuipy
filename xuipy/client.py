@@ -21,7 +21,6 @@ class XUI:
         )
         response.raise_for_status()
         data = response.json()
-        
         if not data.get("success"):
             raise XUIAuthError(f"Login failed: {data.get('msg', 'unknown error')}")
 
@@ -29,8 +28,30 @@ class XUI:
         response = self.session.get(f"{self.base_url}/csrf-token")
         response.raise_for_status()
         data = response.json()
-
         if not data.get("success"):
             raise XUIAuthError(f"Failed to get CSRF token: {data.get('msg', 'unknown error')}")
-
         return data["obj"]
+
+    def logout(self):
+        csrf_token = self._get_csrf_token()
+        response = self.session.post(
+            f"{self.base_url}/logout",
+            headers={"X-CSRF-Token": csrf_token},
+        )
+        response.raise_for_status()
+        data = response.json()
+        if not data.get("success"):
+            raise XUIRequestError(f"Logout failed: {data.get('msg', 'unknown error')}")
+        return data
+
+    def get_two_factor_enable(self):
+        csrf_token = self._get_csrf_token()
+        response = self.session.post(
+            f"{self.base_url}/getTwoFactorEnable",
+            headers={"X-CSRF-Token": csrf_token},
+        )
+        response.raise_for_status()
+        data = response.json()
+        if not data.get("success"):
+            raise XUIRequestError(f"Failed to check 2FA status: {data.get('msg', 'unknown error')}")
+        return data.get("obj")

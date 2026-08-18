@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xuipy"
+version = "0.1.0"
+description = "Python client for 3x-ui"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Mahdyar Shiri" }
+]
+dependencies = [
+    "requests"
+]
+
+[tool.setuptools.packages.find]
+include = ["xui*"]

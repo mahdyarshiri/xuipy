@@ -1,4 +1,5 @@
 import requests
+from xuipy.exceptions import XUIAuthError, XUIRequestError
 
 class XUI:
     def __init__(self, base_url: str, username: str, password: str):
@@ -20,13 +21,16 @@ class XUI:
         )
         response.raise_for_status()
         data = response.json()
+        
         if not data.get("success"):
-            raise Exception(f"Login failed: {data.get('msg', 'unknown error')}")
+            raise XUIAuthError(f"Login failed: {data.get('msg', 'unknown error')}")
 
     def _get_csrf_token(self) -> str:
         response = self.session.get(f"{self.base_url}/csrf-token")
         response.raise_for_status()
         data = response.json()
+
         if not data.get("success"):
-            raise Exception(f"Failed to get CSRF token: {data.get('msg', 'unknown error')}")
+            raise XUIAuthError(f"Failed to get CSRF token: {data.get('msg', 'unknown error')}")
+
         return data["obj"]

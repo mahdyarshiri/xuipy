@@ -8,17 +8,16 @@ class XUI:
         self.password = password
         self.session = requests.Session()
         self._login()
-    
+
     # =============== REQUEST HANDLING ===============
-    def _request(self, method: str, path: str, json_data: dict = None, params: dict = None, error_msg: str = "Request failed",):
+    def _request(self, method: str, path: str, json_data: dict = None, params: dict = None, error_msg: str = "Request failed"):
         headers = {}
         if method.upper() != "GET":
             headers["X-CSRF-Token"] = self._get_csrf_token()
         try:
-            response = self.session.request(method, f"{self.base_url}{path}", json=json_data, params=params, headers=headers,)
+            response = self.session.request(method, f"{self.base_url}{path}", json=json_data, params=params, headers=headers)
             response.raise_for_status()
             data = response.json()
-
         except requests.RequestException as e:
             raise XUIRequestError(f"{error_msg}: {e}") from e
 
@@ -38,7 +37,7 @@ class XUI:
 
     def _login(self):
         """Authenticate with username + password and receive a session cookie."""
-        return self._request("POST", "/login",json_data={"username": self.username, "password": self.password,}, error_msg="Login failed",)
+        return self._request("POST", "/login", json_data={"username": self.username, "password": self.password}, error_msg="Login failed")
 
     def logout(self):
         """Clear the session cookie."""
@@ -91,7 +90,7 @@ class XUI:
 
     def bulk_delete_inbounds(self, inbound_ids: list):
         """Delete many inbounds in one call. Failures are reported per id."""
-        return self._request("POST", "/panel/api/inbounds/bulkDel", json_data=inbound_ids, error_msg="Failed to bulk delete inbounds")
+        return self._request("POST", "/panel/api/inbounds/bulkDel", json_data={"ids": inbound_ids}, error_msg="Failed to bulk delete inbounds")
 
     def set_inbound_enable(self, inbound_id: int, enable: bool):
         """Toggle only the enable flag without re-serialising the whole settings JSON."""
@@ -116,5 +115,4 @@ class XUI:
 
     def set_fallbacks(self, inbound_id: int, fallbacks: list):
         """Replace the entire fallback list for a master inbound. Triggers an Xray restart."""
-        return self._request("POST", f"/panel/api/inbounds/{inbound_id}/fallbacks", json_data=fallbacks, error_msg=f"Failed to set fallbacks for inbound {inbound_id}")
-    
+        return self._request("POST", f"/panel/api/inbounds/{inbound_id}/fallbacks", json_data={"fallbacks": fallbacks}, error_msg=f"Failed to set fallbacks for inbound {inbound_id}")

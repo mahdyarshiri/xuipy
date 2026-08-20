@@ -3,17 +3,24 @@ import requests
 from xuipy.exceptions import XUIRequestError
 
 class XUI:
-    def __init__(self, base_url: str, username: str, password: str):
+    def __init__(self, base_url: str, username: str = None, password: str = None, api_token: str = None):
         self.base_url = base_url.rstrip("/")
-        self.username = username
-        self.password = password
         self.session = requests.Session()
-        self._login()
+
+        if api_token:
+            self.session.headers.update({"Authorization": f"Bearer {api_token}"})
+        elif username and password:
+            self.username = username
+            self.password = password
+            self._login()
+        else:
+            raise ValueError("Provide either (username and password) or api_token")
 
     # =============== REQUEST HANDLING ===============
     def _request(self, method: str, path: str, json_data: dict = None, params: dict = None, error_msg: str = "Request failed"):
         headers = {}
-        if method.upper() != "GET":
+        using_bearer = "Authorization" in self.session.headers
+        if method.upper() != "GET" and not using_bearer:
             headers["X-CSRF-Token"] = self._get_csrf_token()
         try:
             response = self.session.request(method, f"{self.base_url}{path}", json=json_data, params=params, headers=headers)

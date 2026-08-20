@@ -310,4 +310,21 @@ class XUI:
         """Validate a regular expression with the backend Go RE2 compiler without saving it."""
         return self._request("POST", "/panel/api/setting/validateRegex", json_data={"regex": pattern}, error_msg="Failed to validate regex")
     
-    
+    # =============== API TOKENS ===============
+    def get_api_tokens(self):
+        """List every API token, enabled or not. The token value itself is never returned, only metadata."""
+        return self._request("GET", "/panel/api/setting/apiTokens", error_msg="Failed to get API tokens")
+
+    def create_api_token(self, name: str):
+        """Mint a new API token. Name must be unique, 1-64 characters.
+        The plaintext token is returned only in this response — copy it now, it cannot be retrieved later.
+        """
+        return self._request("POST", "/panel/api/setting/apiTokens/create", json_data={"name": name}, error_msg="Failed to create API token")
+
+    def delete_api_token(self, token_id: int):
+        """Permanently delete a token. Any caller using it stops authenticating immediately."""
+        return self._request("POST", f"/panel/api/setting/apiTokens/delete/{token_id}", error_msg=f"Failed to delete API token {token_id}")
+
+    def set_api_token_enabled(self, token_id: int, enabled: bool):
+        """Toggle a token enabled/disabled without deleting it."""
+        return self._request("POST", f"/panel/api/setting/apiTokens/setEnabled/{token_id}", json_data={"enabled": enabled}, error_msg=f"Failed to set enabled on API token {token_id}")

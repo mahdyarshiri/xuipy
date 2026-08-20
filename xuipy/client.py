@@ -1,3 +1,4 @@
+import time
 import requests
 from xuipy.exceptions import XUIRequestError
 
@@ -51,38 +52,31 @@ class XUI:
     # =============== INBOUNDS ===============
     def get_inbounds(self):
         """List every inbound owned by the authenticated user, including clientStats traffic counters."""
-        data = self._request("GET", "/panel/api/inbounds/list", error_msg="Failed to get inbounds")
-        return data["obj"]
+        return self._request("GET", "/panel/api/inbounds/list", error_msg="Failed to get inbounds")
 
     def get_inbounds_slim(self):
         """Same as get_inbounds but with client details stripped down. Use for list pages."""
-        data = self._request("GET", "/panel/api/inbounds/list/slim", error_msg="Failed to get slim inbounds")
-        return data["obj"]
+        return self._request("GET", "/panel/api/inbounds/list/slim", error_msg="Failed to get slim inbounds")
 
     def get_inbound_options(self):
         """Lightweight picker projection (id, remark, tag, protocol, port). Use for dropdowns."""
-        data = self._request("GET", "/panel/api/inbounds/options", error_msg="Failed to get inbound options")
-        return data["obj"]
+        return self._request("GET", "/panel/api/inbounds/options", error_msg="Failed to get inbound options")
 
     def get_all_links(self):
         """Return every protocol URL (vless://, vmess://, etc.) across all inbounds and clients."""
-        data = self._request("GET", "/panel/api/inbounds/allLinks", error_msg="Failed to get all links")
-        return data["obj"]
+        return self._request("GET", "/panel/api/inbounds/allLinks", error_msg="Failed to get all links")
 
     def get_inbound(self, inbound_id: int):
         """Fetch a single inbound by numeric ID."""
-        data = self._request("GET", f"/panel/api/inbounds/get/{inbound_id}", error_msg=f"Failed to get inbound {inbound_id}")
-        return data["obj"]
+        return self._request("GET", f"/panel/api/inbounds/get/{inbound_id}", error_msg=f"Failed to get inbound {inbound_id}")
 
     def add_inbound(self, inbound_data: dict):
         """Create a new inbound. inbound_data must include protocol, port, settings, streamSettings, sniffing, remark."""
-        data = self._request("POST", "/panel/api/inbounds/add", json_data=inbound_data, error_msg="Failed to add inbound")
-        return data["obj"]
+        return self._request("POST", "/panel/api/inbounds/add", json_data=inbound_data, error_msg="Failed to add inbound")
 
     def update_inbound(self, inbound_id: int, inbound_data: dict):
         """Replace an inbound's configuration. Body shape mirrors add_inbound."""
-        data = self._request("POST", f"/panel/api/inbounds/update/{inbound_id}", json_data=inbound_data, error_msg=f"Failed to update inbound {inbound_id}")
-        return data["obj"]
+        return self._request("POST", f"/panel/api/inbounds/update/{inbound_id}", json_data=inbound_data, error_msg=f"Failed to update inbound {inbound_id}")
 
     def delete_inbound(self, inbound_id: int):
         """Delete an inbound by ID. Also removes its associated client stats rows."""
@@ -110,9 +104,58 @@ class XUI:
 
     def get_fallbacks(self, inbound_id: int):
         """List the fallback rules attached to a master VLESS/Trojan TCP-TLS inbound."""
-        data = self._request("GET", f"/panel/api/inbounds/{inbound_id}/fallbacks", error_msg=f"Failed to get fallbacks for inbound {inbound_id}")
-        return data["obj"]
+        return self._request("GET", f"/panel/api/inbounds/{inbound_id}/fallbacks", error_msg=f"Failed to get fallbacks for inbound {inbound_id}")
 
     def set_fallbacks(self, inbound_id: int, fallbacks: list):
         """Replace the entire fallback list for a master inbound. Triggers an Xray restart."""
         return self._request("POST", f"/panel/api/inbounds/{inbound_id}/fallbacks", json_data={"fallbacks": fallbacks}, error_msg=f"Failed to set fallbacks for inbound {inbound_id}")
+    
+    # =============== CLIENTS ===============
+    def get_clients(self):
+        """List every client with its attached inbound IDs and traffic record."""
+        return self._request("GET", "/panel/api/clients/list", error_msg="Failed to get clients")
+
+    def get_clients_paged(self, **params):
+        """Filter, sort, and paginate clients on the server. Pass query params like page, size, search."""
+        return self._request("GET", "/panel/api/clients/list/paged", params=params, error_msg="Failed to get paged clients")
+
+    def get_client(self, email: str):
+        """Fetch one client by email, including its attached inbound IDs."""
+        return self._request("GET", f"/panel/api/clients/get/{email}", error_msg=f"Failed to get client {email}")
+
+    def add_client(self, client_data: dict, inbound_ids: list):
+        """Create a new client and attach it to one or more inbounds. Secrets (uuid/password) auto-generated if omitted."""
+        return self._request("POST", "/panel/api/clients/add", json_data={"client": client_data, "inboundIds": inbound_ids}, error_msg="Failed to add client")
+
+    def update_client(self, email: str, enable: bool = True, expiry: int = 0, total_gb: int = 0, tg_id: int = 0):
+        """Update an existing client by email. Replaces the full row — pass all fields you want kept."""
+        expiry_time = 0 if expiry == 0 else int(time.time() * 1000) + (expiry * 1000)
+        data = {
+            "email": email,
+            "enable": enable,
+            "expiryTime": expiry_time,
+            "totalGB": int(total_gb * 1024 * 1024 * 1024),
+            "tgId": tg_id,
+        }
+        return self._request("POST", f"/panel/api/clients/update/{email}", json_data=data, error_msg=f"Failed to update client {email}")
+
+    def delete_client(self, email: str, keep_traffic: bool = False):
+        """Delete a client by email. Set keep_traffic=True to retain its traffic record."""
+        params = {"keepTraffic": 1} if keep_traffic else {}
+        return self._request("POST", f"/panel/api/clients/del/{email}", params=params, error_msg=f"Failed to delete client {email}")
+
+    def reset_client_traffic(self, email: str):
+        """Zero out a single client's up/down counters and re-enable it if it was depleted."""
+        return self._request("POST", f"/panel/api/clients/resetTraffic/{email}", error_msg=f"Failed to reset traffic for client {email}")
+
+    def get_client_ips(self, email: str):
+        """List source IPs that have connected with this client's credentials."""
+        return self._request("POST", f"/panel/api/clients/ips/{email}", error_msg=f"Failed to get IPs for client {email}")
+
+    def get_client_traffic(self, email: str):
+        """Traffic counters for a client identified by email."""
+        return self._request("GET", f"/panel/api/clients/traffic/{email}", error_msg=f"Failed to get traffic for client {email}")
+
+    def get_client_links(self, email: str):
+        """Return every share URL for one client across all attached inbounds."""
+        return self._request("GET", f"/panel/api/clients/links/{email}", error_msg=f"Failed to get links for client {email}")

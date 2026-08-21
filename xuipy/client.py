@@ -1,10 +1,11 @@
 import time
 import requests
-from xuipy.exceptions import XUIRequestError
+from xuipy.exceptions import XUIAuthError, XUIRequestError
 
 class XUI:
-    def __init__(self, base_url: str, username: str = None, password: str = None, api_token: str = None):
+    def __init__(self, base_url: str, username: str = None, password: str = None, api_token: str = None, timeout: int = 10):
         self.base_url = base_url.rstrip("/")
+        self.timeout = timeout
         self.session = requests.Session()
 
         if api_token:
@@ -23,7 +24,13 @@ class XUI:
         if method.upper() != "GET" and not using_bearer:
             headers["X-CSRF-Token"] = self._get_csrf_token()
         try:
-            response = self.session.request(method, f"{self.base_url}{path}", json=json_data, params=params, headers=headers)
+            response = self.session.request(method, f"{self.base_url}{path}", json=json_data, params=params, headers=headers, timeout=self.timeout)
+        except requests.RequestException as e:
+            raise XUIRequestError(f"{error_msg}: {e}") from e
+
+        if response.status_code in (401, 403):
+            raise XUIAuthError(f"{error_msg}: authentication failed (HTTP {response.status_code})")
+        try:
             response.raise_for_status()
             data = response.json()
         except requests.RequestException as e:
@@ -36,11 +43,20 @@ class XUI:
     # =============== AUTHENTICATION ===============
     def _get_csrf_token(self) -> str:
         """Mint a CSRF token for the current session, required on unsafe (POST) requests."""
-        response = self.session.get(f"{self.base_url}/csrf-token")
-        response.raise_for_status()
-        data = response.json()
+        try:
+            response = self.session.get(f"{self.base_url}/csrf-token", timeout=self.timeout)
+        except requests.RequestException as e:
+            raise XUIRequestError(f"Failed to get CSRF token: {e}") from e
+        if response.status_code in (401, 403):
+            raise XUIAuthError(f"Failed to get CSRF token: authentication failed (HTTP {response.status_code})")
+        try:
+            response.raise_for_status()
+            data = response.json()
+        except requests.RequestException as e:
+            raise XUIRequestError(f"Failed to get CSRF token: {e}") from e
+
         if not data.get("success"):
-            raise XUIRequestError(f"Failed to get CSRF token: {data.get('msg', 'unknown error')}")
+            raise XUIAuthError(f"Failed to get CSRF token: {data.get('msg', 'unknown error')}")
         return data["obj"]
 
     def _login(self):

@@ -3,8 +3,12 @@ class XUIError(Exception):
 
 
 class XUIAuthError(XUIError):
-    """Raised when login or authentication fails."""
+    """Raised when login, authentication, or authorization fails (401/403 responses)."""
 
 
 class XUIRequestError(XUIError):
-    """Raised when an API request to the panel fails."""
+    """Raised when a request to the panel fails (network error, HTTP error, or API-reported failure)."""
+
+
+class XUIValidationError(XUIError):
+    """Raised when arguments fail local validation before a request is even sent."""

@@ -16,7 +16,7 @@ build/
 .pytest_cache/
 .coverage
 htmlcov/
-test.py
+*.py
 
 # Environment variables / secrets
 .env

@@ -1,7 +1,7 @@
 # xuipy
 
 
-A Python client for the [3x-ui](https://github.com/MHSanaei/3x-ui) panel API, covering inbounds, clients, and server management.
+A Python client for the [3x-ui](https://github.com/MHSanaei/3x-ui) panel, covering inbounds, clients, and server management.
 
 ## Installing
 

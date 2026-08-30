@@ -1,7 +1,12 @@
+<div align="center">
+
 # xuipy
 
 [![PyPI](https://img.shields.io/pypi/v/xuipy)](https://pypi.org/project/xuipy/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE
+[![Python](https://img.shields.io/pypi/pyversions/xuipy)](https://pypi.org/project/xuipy/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+</div>
 
 A Python client for the [3x-ui](https://github.com/MHSanaei/3x-ui) panel, covering inbounds, clients, and server management.
 

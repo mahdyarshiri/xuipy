@@ -1,4 +1,4 @@
-class ServerMixin:
+class Server:
     """Server-related methods."""
 
     def get_server_status(self):

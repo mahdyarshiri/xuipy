@@ -6,7 +6,7 @@ from xuipy.exceptions import XUIAuthError, XUIRequestError
 XUIResponse = Union[Dict[str, Any], List[Any], str, bool]
 
 
-class RequestMixin:
+class RequestHandler:
     """Core HTTP request handling."""
 
     def _request(self, method: str, path: str, json_data: Optional[dict] = None, params: Optional[dict] = None, error_msg: str = "Request failed", _retry_auth: bool = True, _retry_csrf: bool = True,) -> XUIResponse:

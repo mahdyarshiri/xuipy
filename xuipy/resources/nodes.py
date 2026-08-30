@@ -1,7 +1,7 @@
 from xuipy.exceptions import XUIValidationError
 
 
-class NodesMixin:
+class Nodes:
     """Node-related methods."""
 
     def get_nodes(self):

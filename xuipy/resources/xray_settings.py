@@ -1,7 +1,7 @@
 from xuipy.exceptions import XUIValidationError
 
 
-class XraySettingsMixin:
+class XraySettings:
     """Xray configuration methods."""
 
     def get_xray_settings(self):

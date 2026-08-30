@@ -2,7 +2,7 @@ import time
 from xuipy.exceptions import XUIValidationError
 
 
-class ClientsMixin:
+class Clients:
     """Client-related methods."""
 
     @staticmethod

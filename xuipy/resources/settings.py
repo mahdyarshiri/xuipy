@@ -1,7 +1,7 @@
 from xuipy.exceptions import XUIValidationError
 
 
-class SettingsMixin:
+class Settings:
     """Panel settings methods."""
 
     def get_all_settings(self):

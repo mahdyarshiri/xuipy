@@ -4,10 +4,10 @@ import requests
 from typing import Optional
 from xuipy.exceptions import XUIValidationError
 
-from xuipy.core import RequestMixin, AuthMixin
-from xuipy.resources import InboundsMixin, ClientsMixin, NodesMixin, HostsMixin, ServerMixin, SettingsMixin, ApiTokensMixin, XraySettingsMixin, SubscriptionMixin
+from xuipy.core import RequestHandler, Auth
+from xuipy.resources import Inbounds, Clients, Nodes, Hosts, Server, Settings, ApiTokens, XraySettings, Subscription
 
-class XUI(RequestMixin, AuthMixin, InboundsMixin, ClientsMixin, NodesMixin, HostsMixin, ServerMixin, SettingsMixin, ApiTokensMixin, XraySettingsMixin, SubscriptionMixin):
+class XUI(RequestHandler, Auth, Inbounds, Clients, Nodes, Hosts, Server, Settings, ApiTokens, XraySettings, Subscription):
     """A Python client for the 3x-ui panel API."""
 
     def __init__(self, base_url: str, username: Optional[str] = None, password: Optional[str] = None, api_token: Optional[str] = None, timeout: int = 10,):

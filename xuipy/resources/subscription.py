@@ -2,7 +2,7 @@ import requests
 from xuipy.exceptions import XUIValidationError, XUIRequestError
 
 
-class SubscriptionMixin:
+class Subscription:
     """Subscription-server methods."""
 
     def get_subscription(self, sub_url: str, format: str = "normal"):

@@ -1,7 +1,7 @@
 from xuipy.exceptions import XUIValidationError
 
 
-class InboundsMixin:
+class Inbounds:
     """Inbound-related methods."""
 
     def get_inbounds(self):

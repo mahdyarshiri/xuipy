@@ -1,7 +1,7 @@
 from xuipy.exceptions import XUIValidationError
 
 
-class ApiTokensMixin:
+class ApiTokens:
     """API token management methods."""
 
     def get_api_tokens(self):

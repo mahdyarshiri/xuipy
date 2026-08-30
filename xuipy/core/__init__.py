@@ -1,4 +1,4 @@
-from xuipy.core.request import RequestMixin
-from xuipy.core.auth import AuthMixin
+from xuipy.core.request import RequestHandler
+from xuipy.core.auth import Auth
 
-__all__ = ["RequestMixin", "AuthMixin"]
+__all__ = ["RequestHandler", "Auth"]

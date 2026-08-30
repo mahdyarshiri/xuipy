@@ -1,7 +1,7 @@
 from xuipy.exceptions import XUIValidationError
 
 
-class HostsMixin:
+class Hosts:
     """Host-related methods."""
 
     def get_hosts(self):

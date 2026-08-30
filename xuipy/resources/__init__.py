@@ -1,21 +1,21 @@
-from xuipy.resources.inbounds import InboundsMixin
-from xuipy.resources.clients import ClientsMixin
-from xuipy.resources.nodes import NodesMixin
-from xuipy.resources.hosts import HostsMixin
-from xuipy.resources.server import ServerMixin
-from xuipy.resources.settings import SettingsMixin
-from xuipy.resources.api_tokens import ApiTokensMixin
-from xuipy.resources.xray_settings import XraySettingsMixin
-from xuipy.resources.subscription import SubscriptionMixin
+from xuipy.resources.inbounds import Inbounds
+from xuipy.resources.clients import Clients
+from xuipy.resources.nodes import Nodes
+from xuipy.resources.hosts import Hosts
+from xuipy.resources.server import Server
+from xuipy.resources.settings import Settings
+from xuipy.resources.api_tokens import ApiTokens
+from xuipy.resources.xray_settings import XraySettings
+from xuipy.resources.subscription import Subscription
 
 __all__ = [
-    "InboundsMixin",
-    "ClientsMixin",
-    "NodesMixin",
-    "HostsMixin",
-    "ServerMixin",
-    "SettingsMixin",
-    "ApiTokensMixin",
-    "XraySettingsMixin",
-    "SubscriptionMixin",
+    "Inbounds",
+    "Clients",
+    "Nodes",
+    "Hosts",
+    "Server",
+    "Settings",
+    "ApiTokens",
+    "XraySettings",
+    "Subscription",
 ]

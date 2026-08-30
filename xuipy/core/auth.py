@@ -1,7 +1,7 @@
 from xuipy.exceptions import XUIAuthError
 
 
-class AuthMixin:
+class Auth:
     """Authentication-related methods."""
 
     def _get_csrf_token(self, force_refresh: bool = False) -> str:
